@@ -1,3 +1,7 @@
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.regex.Pattern;
+
 public class Parking {
     private Floor[] floors;
     private int size;
@@ -13,6 +17,9 @@ public class Parking {
     }
 
     public boolean add(Floor floor){
+        if (floor == null){
+            throw new NullPointerException("Exception: floor is null!");
+        }
         boolean temp = false;
         for (int i = size-1; i >= 0; i--){
             if (floors[i]==null){
@@ -33,6 +40,12 @@ public class Parking {
     }
 
     public boolean add(int index, Floor floor){
+        if (index<0 || index>size){
+            throw new IndexOutOfBoundsException("Exception: IndexOutOfBoundsException!");
+        }
+        if (floor == null){
+            throw new NullPointerException("Exception: floor is null!");
+        }
         if (index<size && floors[index]==null){
             floors[index] =floor;
             count++;
@@ -45,10 +58,19 @@ public class Parking {
     }
 
     public Floor get(int index){
+        if (index<0 || index>size){
+            throw new IndexOutOfBoundsException("Exception: IndexOutOfBoundsException!");
+        }
         return floors[index];
     }
 
     public Floor set(int index, Floor floor){
+        if (index<0 || index>size){
+            throw new IndexOutOfBoundsException("Exception: IndexOutOfBoundsException!");
+        }
+        if (floor == null){
+            throw new NullPointerException("Exception: floor is null!");
+        }
         if (index < size){
             floors[index] = floor;
             return floors[index];
@@ -59,6 +81,9 @@ public class Parking {
     }
 
     public Floor remove(int index){
+        if (index<0 || index>size){
+            throw new IndexOutOfBoundsException("Exception: IndexOutOfBoundsException!");
+        }
         if (index < size && floors[index]!=null){
             Floor floor = floors[index];
             count--;
@@ -119,6 +144,12 @@ public class Parking {
     }
 
     public Space getSpace(String registrationNumber){
+        if (registrationNumber == null){
+            throw new NullPointerException("Exception: registrationNumber is null!");
+        }
+        if (!Pattern.matches("[ABEKMHOPCTYX]\\d\\d\\d[ABEKMHOPCTYX][ABEKMHOPCTYX]\\d{2,3}",registrationNumber)){
+            throw new RegistrationNumberFormatException("Exception: wrong format registrationNumber!");
+        }
         for (int i = 0; i < size; i++) {
             Space[] getSpace = floors[i].getSpaces();
             for (int j = 0; j < floors[i].size(); j++) {
@@ -127,10 +158,16 @@ public class Parking {
                 }
             }
         }
-        return null;
+        throw new NoSuchElementException("Exception: not found space with registrationNumber!");
     }
 
     public Space removeSpace(String registrationNumber){
+        if (registrationNumber == null){
+            throw new NullPointerException("Exception: registrationNumber is null!");
+        }
+        if (!Pattern.matches("[ABEKMHOPCTYX]\\d\\d\\d[ABEKMHOPCTYX][ABEKMHOPCTYX]\\d{2,3}",registrationNumber)){
+            throw new RegistrationNumberFormatException("Exception: wrong format registrationNumber!");
+        }
         for (int i = 0; i < size; i++) {
             Space[] getSpace = floors[i].getSpaces();
             for (int j = 0; j < floors[i].size(); j++) {
@@ -139,10 +176,19 @@ public class Parking {
                 }
             }
         }
-        return  null;
+        throw new NoSuchElementException("Exception: not found space with registrationNumber!");
     }
 
     public Space setSpace(String registrationNumber, Space space){
+        if (registrationNumber == null){
+            throw new NullPointerException("Exception: registrationNumber is null!");
+        }
+        if (space == null){
+            throw new NullPointerException("Exception: space is null!");
+        }
+        if (!Pattern.matches("[ABEKMHOPCTYX]\\d\\d\\d[ABEKMHOPCTYX][ABEKMHOPCTYX]\\d{2,3}",registrationNumber)){
+            throw new RegistrationNumberFormatException("Exception: wrong format registrationNumber!");
+        }
         for (int i = 0; i < size; i++) {
             Space[] getSpace = floors[i].getSpaces();
             for (int j = 0; j < floors[i].size(); j++) {
@@ -152,7 +198,7 @@ public class Parking {
                 }
             }
         }
-        return null;
+        throw new NoSuchElementException("Exception: not found space with registrationNumber!");
     }
 
     public int imptySpacesQuantity(){
@@ -165,6 +211,9 @@ public class Parking {
     }
 
     public int vehiclesQuantity(VehicleTypes vehicleTypes){
+        if (vehicleTypes == null){
+            throw new NullPointerException("Exception: vehicleTypes is null!");
+        }
         int count = 0;
         Floor floors[] = getFloors();
         for (int i = 0; i < size; i++) {
@@ -181,6 +230,36 @@ public class Parking {
         }
         size *=2;
         floors = newFloors;
+    }
+
+    public String toString(){
+        StringBuilder sb = new StringBuilder(String.format("Floors (%d total):\n",size()));
+        Floor[] returnSpace = getFloors();
+        for (int i = 0; i < returnSpace.length; i++) {
+            sb.append(returnSpace[i].toString()+"\n");
+        }
+        return sb.toString();
+    }
+
+    public Floor[] getFloorsWithPerson(Person person){
+        if (person == null){
+            throw new NullPointerException("Exception: person is null!");
+        }
+        int j=0;
+        for (int i = 0; i < size; i++) {
+            if (floors[i]!=null && floors[i].spacesQuantity(person)!=0){
+                j++;
+            }
+        }
+        Floor[] floorsWithPerson = new Floor[j];
+        j=0;
+        for (int i = 0; i < size; i++) {
+            if (floors[i]!=null && floors[i].spacesQuantity(person)!=0){
+                floorsWithPerson[j] = floors[i];
+                j++;
+            }
+        }
+        return  floorsWithPerson;
     }
 
 }

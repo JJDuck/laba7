@@ -1,5 +1,7 @@
+import java.time.LocalDate;
+
 public class Test {
-    static void lab1testsOwnersFloor(){
+    /*static void lab1testsOwnersFloor(){
         Person nik = new Person("Николай","Щербаков");
         Person art = new Person("Артем","Бондарев");
         Person anonim = new Person("Ким","Кимыч");
@@ -109,6 +111,7 @@ public class Test {
         Space space3 = new RentedSpace(art,mas);
         Space space4 = new RentedSpace(anonim,gran);
         Space space5 = new RentedSpace(vach,ren);
+        Space space6 = new RentedSpace(nik,ren);
         Space space0 = new RentedSpace();
         Parking parking = new Parking(3);
         parking.add(new RentedSpacesFloor());
@@ -122,12 +125,111 @@ public class Test {
         parking.get(1).add(space0);
         parking.get(2).add(space2);
         parking.get(2).add(space4);
-        System.out.println(parking.vehiclesQuantity(VehicleTypes.CAR));
-        System.out.println(parking.imptySpacesQuantity());
+        //System.out.println(parking.vehiclesQuantity(VehicleTypes.CAR));
+        //System.out.println(parking.imptySpacesQuantity());
     }
-    public static void main(String[] args) {
-        lab3tests();
+
+    static void lab4tests()  {
+        Person nik = new Person("Николай","Щербаков");
+        Person art = new Person("Артем","Бондарев");
+        Person max = new Person("Максим","Данилин");
+        Person vach = new Person("Вячеслав","Сучков");
+        Person anonim = new Person("Ким","Кимыч");
+        Vehicle gran = new Vehicle("1234","Lada", "Granta",VehicleTypes.CAR);
+        Vehicle mas = new Vehicle("0000", "Mazda", "cx 5",VehicleTypes.CAR);
+        Vehicle volk = new Vehicle("1928", "Volkswagen", "Polo",VehicleTypes.CAR);
+        Vehicle ren = new Vehicle("5557", "Renault", "Sandero",VehicleTypes.CAR);
+        Vehicle kia = new Vehicle("2548", "KIA", "Rio",VehicleTypes.CAR);
+        Space space1 = new RentedSpace(nik,kia);
+        Space space2 = new RentedSpace(max,volk);
+        Space space3 = new RentedSpace(art,mas);
+        Space space4 = new RentedSpace(anonim,gran);
+        Space space5 = new RentedSpace(vach,ren);
+        Space space6 = new RentedSpace(nik,ren);
+        Space space0 = new RentedSpace();
+        Parking parking = new Parking(3);
+        parking.add(new RentedSpacesFloor());
+        parking.add(new RentedSpacesFloor());
+        parking.add(new RentedSpacesFloor());
+        parking.get(0).add(space1);
+        parking.get(0).add(space4);
+        parking.get(0).add(space6);
+        parking.get(0).add(0,space5);
+        parking.get(1).add(space3);
+        parking.get(1).add(space0);
+        parking.get(1).add(space0);
+        parking.get(2).add(space4);
+        parking.get(2).add(space2);
+        parking.get(2).add(space2);
+        parking.get(2).add(space6);
+
+        System.out.println(parking.get(0).spacesQuantity(nik));
+        System.out.println(parking.get(1).remove(space3));
+        System.out.println(parking.get(2).indexOf(space2));
+        for (int i = 0; i < parking.getFloorsWithPerson(nik).length; i++) {
+            System.out.println(parking.getFloorsWithPerson(nik)[i]);
+        }
+
+        System.out.println(art.hashCode());
+
+    }*/
+
+    static void lab5tests(){
+        try {
+            Person nik = new Person("Николай","Щербаков");
+            Person art = new Person("Артем","Бондарев");
+            Person max = new Person("Максим","Данилин");
+            Person vach = new Person("Вячеслав","Сучков");
+            Person anonim = new Person("Ким","Кимыч");
+            Vehicle gran = new Vehicle("A123BB111","Lada", "Granta",VehicleTypes.CAR);
+            Vehicle mas = new Vehicle("Y342OA32", "cx 5", "cx 5",VehicleTypes.CAR);
+            Vehicle volk = new Vehicle("K624CT333", "Volkswagen", "Polo",VehicleTypes.CAR);
+            Vehicle ren = new Vehicle("X999XX12", "Renault", "Sandero",VehicleTypes.CAR);
+            Vehicle kia = new Vehicle("E452TT19", "KIA", "Rio",VehicleTypes.CAR);
+            RentedSpace space1 = new RentedSpace(nik,kia,LocalDate.parse("2015-02-20"),LocalDate.parse("2016-02-20"));
+            RentedSpace space2 = new RentedSpace(max,volk,LocalDate.of(2012,02,20),LocalDate.of(2013,02,20));
+            RentedSpace space3 = new RentedSpace(art,mas,LocalDate.parse("2018-02-20"),LocalDate.parse("2019-02-20"));
+            RentedSpace space4 = new RentedSpace(anonim,gran,LocalDate.parse("2019-02-20"),LocalDate.parse("2020-02-20"));
+            RentedSpace space5 = new RentedSpace(vach,ren,LocalDate.parse("2020-02-20"),LocalDate.parse("2021-02-20"));
+            RentedSpace space6 = new RentedSpace(nik,ren,LocalDate.parse("2018-04-14"),LocalDate.parse("2019-04-14"));
+            RentedSpace space0 = new RentedSpace();
+            Parking parking = new Parking(3);
+            parking.add(new RentedSpacesFloor());
+            parking.add(new RentedSpacesFloor());
+            parking.add(new RentedSpacesFloor());
+            parking.get(0).add(space1);
+            parking.get(0).add(space4);
+            parking.get(0).add(space6);
+            parking.get(0).add(space5);
+            parking.get(1).add(space3);
+            parking.get(1).add(space0);
+            parking.get(1).add(space0);
+            parking.get(2).add(space4);
+            parking.get(2).add(space2);
+            parking.get(2).add(space2);
+            parking.get(2).add(space6);
+
+            System.out.println(parking.get(1).nearestRentEndsDate());
+
+        }
+        catch (NullPointerException e){
+            System.out.println(e.getMessage());
+        }
+        catch (java.lang.IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        }
+        catch (NoRentedSpaceException e){
+            System.out.println(e.getMessage());
+        }
+
+
+    }
+    public static void main(String[] args)  {
+        lab5tests();
+        //lab4tests();
+        //lab3tests();
         //lab2tests();
         //lab1testsOwnersFloor();
     }
+
 }
