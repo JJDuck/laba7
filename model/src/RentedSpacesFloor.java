@@ -1,4 +1,7 @@
+import org.jetbrains.annotations.NotNull;
+
 import java.time.LocalDate;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
@@ -229,6 +232,12 @@ public class  RentedSpacesFloor implements Floor, Cloneable{
         return returnSpace;
     }
 
+    @NotNull
+    @Override
+    public Iterator<Space> iterator() {
+        return new SpaceIterator();
+    }
+
 
     public class Node implements Cloneable{
         Node next;
@@ -355,5 +364,29 @@ public class  RentedSpacesFloor implements Floor, Cloneable{
             }
         }
         return nearestDate;
+    }
+
+    @Override
+    public int compareTo(@NotNull Floor o) {
+        return this.size() - o.size();
+    }
+
+    private class SpaceIterator implements java.util.Iterator<Space>{
+        Node node = head.next;
+
+        @Override
+        public boolean hasNext() {
+            return node.next.value != null;
+        }
+
+        @Override
+        public Space next() throws IndexOutOfBoundsException{
+            if (hasNext()) {
+                node = node.next;
+                return node.value;
+
+            }
+            throw new NoSuchElementException();
+        }
     }
 }

@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.util.Iterator;
 
 public class Test {
     /*static void lab1testsOwnersFloor(){
@@ -172,7 +173,7 @@ public class Test {
 
         System.out.println(art.hashCode());
 
-    }*/
+    }
 
     static void lab5tests(){
         try {
@@ -223,9 +224,58 @@ public class Test {
         }
 
 
+    }*/
+
+    static void lab6tests(){
+        Person nik = new Person("Николай","Щербаков");
+        Person art = new Person("Артем","Бондарев");
+        Person max = new Person("Максим","Данилин");
+        Person vach = new Person("Вячеслав","Сучков");
+        Person anonim = new Person("Ким","Кимыч");
+        Vehicle gran = new Vehicle("A123BB111","Lada", "Granta",VehicleTypes.CAR);
+        Vehicle mas = new Vehicle("Y342OA32", "cx 5", "cx 5",VehicleTypes.CAR);
+        Vehicle volk = new Vehicle("K624CT333", "Volkswagen", "Polo",VehicleTypes.CAR);
+        Vehicle ren = new Vehicle("X999XX12", "Renault", "Sandero",VehicleTypes.CAR);
+        Vehicle kia = new Vehicle("E452TT19", "KIA", "Rio",VehicleTypes.CAR);
+        RentedSpace space1 = new RentedSpace(nik,kia,LocalDate.parse("2015-02-20"),LocalDate.parse("2016-02-20"));
+        RentedSpace space2 = new RentedSpace(max,volk,LocalDate.of(2012,02,20),LocalDate.of(2013,02,20));
+        RentedSpace space3 = new RentedSpace(art,mas,LocalDate.parse("2018-02-20"),LocalDate.parse("2019-02-20"));
+        RentedSpace space4 = new RentedSpace(anonim,gran,LocalDate.parse("2019-02-20"),LocalDate.parse("2020-02-20"));
+        RentedSpace space5 = new RentedSpace(vach,ren,LocalDate.parse("2020-02-20"),LocalDate.parse("2021-02-20"));
+        RentedSpace space6 = new RentedSpace(nik,ren,LocalDate.parse("2018-04-14"),LocalDate.parse("2019-04-14"));
+        RentedSpace space0 = new RentedSpace();
+        Parking parking = new Parking(3);
+        parking.add(new RentedSpacesFloor());
+        parking.add(new RentedSpacesFloor());
+        parking.add(new RentedSpacesFloor());
+        parking.get(0).add(space1);
+        parking.get(0).add(space4);
+        parking.get(0).add(space6);
+        parking.get(0).add(space5);
+        parking.get(1).add(space3);
+        parking.get(1).add(space0);
+        parking.get(1).add(space0);
+        parking.get(2).add(space4);
+        parking.get(2).add(space2);
+        parking.get(2).add(space2);
+        parking.get(2).add(space6);
+        parking.get(2).add(space5);
+        for (int i = 0; i < parking.getFloors().length; i++) {
+            //System.out.println(parking.getFloors()[i]);
+        }
+        Space[] space = parking.getFloors()[0].getSpaces(VehicleTypes.NONE);
+        for (int i = 0; i < space.length; i++) {
+            //System.out.println(space[i]);
+        }
+
+        Iterator<Floor> iter = parking.iterator();
+        while (iter.hasNext()){
+            System.out.println(iter.next());
+        }
     }
     public static void main(String[] args)  {
-        lab5tests();
+        lab6tests();
+        //lab5tests();
         //lab4tests();
         //lab3tests();
         //lab2tests();

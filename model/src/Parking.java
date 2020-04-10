@@ -1,8 +1,11 @@
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
-
-public class Parking {
+import java.util.Arrays;
+public class Parking implements java.lang.Iterable<Floor> {
     private Floor[] floors;
     private int size;
     private int count;
@@ -104,8 +107,10 @@ public class Parking {
     }
 
     public Floor[] getFloors() {
+        Arrays.sort(floors);
         return floors;
     }
+
     public Floor[] getFloorsSort(){
         Floor[] sortFloors = floors;
         Floor floor;
@@ -123,16 +128,16 @@ public class Parking {
 
     public Vehicle[] getVehicle(){
         int size = 0;
-        for (int i = 0; i < this.size; i++) {
-            if (floors[i]!=null){
-                size+=floors[i].size();
+        for (Floor ownersFloor : floors) {
+            if (ownersFloor!=null){
+                size+=ownersFloor.size();
             }
         }
         int k = 0;
         Vehicle[] getVehicle = new Vehicle[size];
-        for (int i = 0; i < this.size; i++) {
-            Vehicle[] newGetVehicle = floors[i].getVehicles();
-            if (floors[i].size()!=0){
+        for (Floor ownersFloor : floors) {
+            Vehicle[] newGetVehicle = ownersFloor.getVehicles();
+            if (ownersFloor.size()!=0){
                 for (int j = 0; j < size; j++) {
                     getVehicle[k]=newGetVehicle[j];
                     k++;
@@ -150,9 +155,9 @@ public class Parking {
         if (!Pattern.matches("[ABEKMHOPCTYX]\\d\\d\\d[ABEKMHOPCTYX][ABEKMHOPCTYX]\\d{2,3}",registrationNumber)){
             throw new RegistrationNumberFormatException("Exception: wrong format registrationNumber!");
         }
-        for (int i = 0; i < size; i++) {
-            Space[] getSpace = floors[i].getSpaces();
-            for (int j = 0; j < floors[i].size(); j++) {
+        for (Floor ownersFloor : floors) {
+            Space[] getSpace = ownersFloor.getSpaces();
+            for (int j = 0; j < ownersFloor.size(); j++) {
                 if (getSpace[j].getVehicle().getRegistrationNumber().equals(registrationNumber)){
                     return getSpace[j];
                 }
@@ -168,11 +173,11 @@ public class Parking {
         if (!Pattern.matches("[ABEKMHOPCTYX]\\d\\d\\d[ABEKMHOPCTYX][ABEKMHOPCTYX]\\d{2,3}",registrationNumber)){
             throw new RegistrationNumberFormatException("Exception: wrong format registrationNumber!");
         }
-        for (int i = 0; i < size; i++) {
-            Space[] getSpace = floors[i].getSpaces();
-            for (int j = 0; j < floors[i].size(); j++) {
+        for (Floor ownersFloor : floors) {
+            Space[] getSpace = ownersFloor.getSpaces();
+            for (int j = 0; j < ownersFloor.size(); j++) {
                 if (getSpace[j].getVehicle().getRegistrationNumber().equals(registrationNumber)){
-                    return floors[i].remove(registrationNumber);
+                    return ownersFloor.remove(registrationNumber);
                 }
             }
         }
@@ -189,11 +194,11 @@ public class Parking {
         if (!Pattern.matches("[ABEKMHOPCTYX]\\d\\d\\d[ABEKMHOPCTYX][ABEKMHOPCTYX]\\d{2,3}",registrationNumber)){
             throw new RegistrationNumberFormatException("Exception: wrong format registrationNumber!");
         }
-        for (int i = 0; i < size; i++) {
-            Space[] getSpace = floors[i].getSpaces();
-            for (int j = 0; j < floors[i].size(); j++) {
+        for (Floor ownersFloor : floors) {
+            Space[] getSpace = ownersFloor.getSpaces();
+            for (int j = 0; j < ownersFloor.size(); j++) {
                 if (getSpace[j].getVehicle().getRegistrationNumber().equals(registrationNumber)){
-                    return floors[i].set(j,space);
+                    return ownersFloor.set(j,space);
 
                 }
             }
@@ -204,8 +209,8 @@ public class Parking {
     public int imptySpacesQuantity(){
         int count = 0;
         Floor floors[] = getFloors();
-        for (int i = 0; i < size; i++) {
-            count += floors[i].getEmptySpaces().length;
+        for (Floor ownersFloor : floors) {
+            count += ownersFloor.getEmptySpaces().length;
         }
         return count;
     }
@@ -216,8 +221,8 @@ public class Parking {
         }
         int count = 0;
         Floor floors[] = getFloors();
-        for (int i = 0; i < size; i++) {
-            count+=floors[i].getSpaces(vehicleTypes).length;
+        for (Floor ownersFloor : floors) {
+            count+=ownersFloor.getSpaces(vehicleTypes).length;
         }
         return count;
     }
@@ -246,20 +251,43 @@ public class Parking {
             throw new NullPointerException("Exception: person is null!");
         }
         int j=0;
-        for (int i = 0; i < size; i++) {
-            if (floors[i]!=null && floors[i].spacesQuantity(person)!=0){
+        for (Floor ownersFloor : floors) {
+            if (ownersFloor!=null && ownersFloor.spacesQuantity(person)!=0){
                 j++;
             }
         }
         Floor[] floorsWithPerson = new Floor[j];
         j=0;
-        for (int i = 0; i < size; i++) {
-            if (floors[i]!=null && floors[i].spacesQuantity(person)!=0){
-                floorsWithPerson[j] = floors[i];
+        for (Floor ownersFloor : floors) {
+            if (ownersFloor!=null && ownersFloor.spacesQuantity(person)!=0){
+                floorsWithPerson[j] = ownersFloor;
                 j++;
             }
         }
-        return  floorsWithPerson;
+        Arrays.sort(floorsWithPerson);
+        return floorsWithPerson;
     }
 
+    @Override
+    public Iterator<Floor> iterator() {
+        return new ParkingIterator();
+    }
+
+    private class ParkingIterator implements Iterator<Floor> {
+
+        int index;
+
+        @Override
+        public boolean hasNext() {
+            return index < floors.length;
+        }
+
+        @Override
+        public Floor next() {
+            if (hasNext()) {
+                return floors[index++];
+            }
+            return null;
+        }
+    }
 }
