@@ -1,9 +1,7 @@
 import java.time.LocalDate;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.regex.Pattern;
+import java.util.*;
 
-public interface Floor extends java.lang.Comparable<Floor>, java.lang.Iterable<Space>{
+public interface Floor extends java.lang.Comparable<Floor>, java.lang.Iterable<Space>,java.util.Collection<Space> {
     public boolean add(Space space);
     public boolean add(int index, Space space);
     public Space get(int index);
@@ -37,20 +35,21 @@ public interface Floor extends java.lang.Comparable<Floor>, java.lang.Iterable<S
         return remove(hasSpace(registrationNumber));
     }
     public int size();
-    public default Vehicle[] getVehicles(){
-        Vehicle[] getVehicles = new Vehicle[getSpaces().length];
+    public default Collection<Vehicle> getVehicles(){
+        ArrayList<Vehicle>  getVehicles = new ArrayList<Vehicle>();
+        Space[] spaces = (Space[]) getSpaces();
         int j= 0;
         for (int i = 0; i < getSpaces().length; i++) {
             if (getSpaces()[i] != null) {
-                getVehicles[j] = getSpaces()[i].getVehicle();
+                getVehicles.add(spaces[i].getVehicle());
                 j++;
             }
         }
         return getVehicles;
     }
     public void increaseArray();
-    public  Space[] getSpaces();
-    public default Space[] getSpaces(VehicleTypes vehicleTypes){
+    public Space[] getSpaces();
+    public default List<Space> getSpaces(VehicleTypes vehicleTypes){
         Space[] returnSpace = new Space[size()];
         int i = 0;
         for (Iterator<Space> it = iterator(); it.hasNext(); ) {
@@ -60,9 +59,9 @@ public interface Floor extends java.lang.Comparable<Floor>, java.lang.Iterable<S
                 i++;
             }
         }
-        return  returnSpace;
+        return Arrays.asList(returnSpace);
     }
-    public default Space[] getEmptySpaces(){
+    public default Deque<Space> getEmptySpaces(){
         Space[] returnSpace = new Space[size()];
         int i = 0;
         for (Iterator<Space> it = iterator(); it.hasNext(); ){
@@ -72,7 +71,7 @@ public interface Floor extends java.lang.Comparable<Floor>, java.lang.Iterable<S
                 i++;
             }
         }
-        return returnSpace;
+        return new LinkedList<>(Arrays.asList(returnSpace));
     }
     public String toString();
     public int hashCode();

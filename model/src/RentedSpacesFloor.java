@@ -1,8 +1,8 @@
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class  RentedSpacesFloor implements Floor, Cloneable{
@@ -162,13 +162,109 @@ public class  RentedSpacesFloor implements Floor, Cloneable{
     }
 
     @Override
-    public Vehicle[] getVehicles() {
+    public boolean isEmpty() {
+        return size==0;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        Node node = head.next;
+        for (int i = 0; i < size; i++, node = node.next) {
+            if (node.value.equals(o)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Object[] toArray() {
+        Space[] newInstance = (Space[]) Array.newInstance(head.next.value.getClass(), size);
+        for (int i = 0; i < size; i++) {
+            newInstance[i] = get(i);
+        }
+        return newInstance;
+    }
+
+    @Override
+    @SuppressWarnings(value = "unchecked")
+    public <T> T[] toArray(T[] a) {
+        T[] newInstance = (T[]) Array.newInstance(a.getClass().getComponentType(), size);
+        for (int i = 0; i < size; i++) {
+            newInstance[i] = (T) get(i);
+        }
+        return newInstance;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return remove((Space) o);
+    }
+
+    @Override
+    public boolean containsAll(@NotNull Collection<?> c) {
+        for (Object x : c) {
+            if (!contains(x)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Space> c) {
+        for (Space object : c) {
+            add(object);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        boolean collectionsHasChanged = false;
+        for (Object x : c) {
+            int counter = size;
+            for (int i = 0; i < counter; i++) {
+                if (head.next.value.equals(x)) {
+                    head.next = head.next.next;
+                    size--;
+                    collectionsHasChanged = true;
+                } else {
+                    head = head.next;
+                }
+            }
+            head = head.next;
+        }
+        return collectionsHasChanged;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        boolean collectionHasChanged = false;
+        Node node = head;
+        for (int i = 0; i < size; i++) {
+            if (!c.contains(get(i))) {
+                remove(i--);
+                collectionHasChanged = true;
+            }
+        }
+        return collectionHasChanged;
+    }
+
+    @Override
+    public void clear() {
+        head.value = null;
+        head.next = head;
+        size = 0;
+    }
+    @Override
+    public List<Vehicle> getVehicles() {
         Vehicle[] vehicles = new Vehicle[size];
         Node node = head.next;
         for (int i = 0; i < size; i++, node = node.next) {
             vehicles[i] = node.value.getVehicle();
         }
-        return vehicles;
+        return Arrays.asList(vehicles);
     }
 
     @Override
@@ -186,32 +282,23 @@ public class  RentedSpacesFloor implements Floor, Cloneable{
         return spaces;
     }
 
-    public Space[] getSpaces(VehicleTypes vehicleTypes) {
+    public List<Space> getSpaces(VehicleTypes vehicleTypes) {
         if (vehicleTypes == null){
             throw new NullPointerException("Exception: vehicleTypes is null!");
         }
-        Space[] spaces = new Space[size];
+        Objects.requireNonNull(vehicleTypes);
+        List<Space> spacesList = new ArrayList<>();
         Node node = head.next;
-        int j = 0;
         for (int i = 0; i < size; i++, node = node.next) {
-            if (node.value.getVehicle().getType().equals(vehicleTypes)){
-                spaces[j] = node.value;
-                j++;
-            }
-
-        }
-        Space[] returnSpace = new Space[j];
-        int k = 0;
-        for (int i = 0; i < j; i++) {
-            if (spaces[i]!=null){
-                returnSpace[k] = spaces[i];
-                k++;
+            if (node.value.getVehicle().getType().equals(vehicleTypes)) {
+                spacesList.add(node.value);
             }
         }
-        return returnSpace;
+        return spacesList;
     }
 
-    public Space[] getEmptySpaces() {
+
+    public Deque<Space> getEmptySpaces() {
         Space[] spaces = new Space[size];
         Node node = head.next;
         int j = 0;
@@ -229,7 +316,7 @@ public class  RentedSpacesFloor implements Floor, Cloneable{
                 k++;
             }
         }
-        return returnSpace;
+        return new LinkedList<>(Arrays.asList(returnSpace));
     }
 
     @NotNull
@@ -255,7 +342,7 @@ public class  RentedSpacesFloor implements Floor, Cloneable{
 
     public String toString(){
         StringBuilder sb = new StringBuilder("Rented spaces:\n");
-        Space[] returnSpace = getSpaces();
+        Space[] returnSpace = (Space[]) getSpaces();
         for (int i = 0; i < returnSpace.length; i++) {
             sb.append(returnSpace[i].toString()+"\n");
         }
@@ -263,7 +350,7 @@ public class  RentedSpacesFloor implements Floor, Cloneable{
     }
 
     public int hashCode(){
-        int hash = 53* getSpaces().length^getSpaces().hashCode();
+        int hash = 53* getSpaces().length ^getSpaces().hashCode();
         return  hash;
     }
 

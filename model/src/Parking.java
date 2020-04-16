@@ -1,10 +1,8 @@
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.regex.Pattern;
-import java.util.Arrays;
+
 public class Parking implements java.lang.Iterable<Floor> {
     private Floor[] floors;
     private int size;
@@ -111,41 +109,19 @@ public class Parking implements java.lang.Iterable<Floor> {
         return floors;
     }
 
-    public Floor[] getFloorsSort(){
-        Floor[] sortFloors = floors;
-        Floor floor;
-        for (int i = 0; i < size-1; i++) {
-            for (int j = 1; j < size; j++) {
-                if (sortFloors[i].size()<sortFloors[j].size()){
-                    floor = sortFloors[i];
-                    sortFloors[i]= sortFloors[j];
-                    sortFloors[j] = floor;
-                }
-            }
-        }
-        return  sortFloors;
+    public List<Floor> getFloorsSort(){
+        Floor[] newArray = new Floor[size];
+        System.arraycopy(size, 0, newArray, 0, size);
+        Arrays.sort(newArray);
+        return Arrays.asList(newArray);
     }
 
-    public Vehicle[] getVehicle(){
-        int size = 0;
+    public Collection<Vehicle> getVehicle(){
+        List<Vehicle> vehicles = new ArrayList<>();
         for (Floor ownersFloor : floors) {
-            if (ownersFloor!=null){
-                size+=ownersFloor.size();
-            }
+            vehicles.addAll(ownersFloor.getVehicles());
         }
-        int k = 0;
-        Vehicle[] getVehicle = new Vehicle[size];
-        for (Floor ownersFloor : floors) {
-            Vehicle[] newGetVehicle = ownersFloor.getVehicles();
-            if (ownersFloor.size()!=0){
-                for (int j = 0; j < size; j++) {
-                    getVehicle[k]=newGetVehicle[j];
-                    k++;
-                }
-            }
-
-        }
-        return  getVehicle;
+        return vehicles;
     }
 
     public Space getSpace(String registrationNumber){
@@ -210,7 +186,7 @@ public class Parking implements java.lang.Iterable<Floor> {
         int count = 0;
         Floor floors[] = getFloors();
         for (Floor ownersFloor : floors) {
-            count += ownersFloor.getEmptySpaces().length;
+            count += ownersFloor.getEmptySpaces().toArray().length;
         }
         return count;
     }
@@ -222,7 +198,7 @@ public class Parking implements java.lang.Iterable<Floor> {
         int count = 0;
         Floor floors[] = getFloors();
         for (Floor ownersFloor : floors) {
-            count+=ownersFloor.getSpaces(vehicleTypes).length;
+            count+=ownersFloor.getSpaces(vehicleTypes).toArray().length;
         }
         return count;
     }
@@ -246,26 +222,20 @@ public class Parking implements java.lang.Iterable<Floor> {
         return sb.toString();
     }
 
-    public Floor[] getFloorsWithPerson(Person person){
+    public Set<Floor> getFloorsWithPerson(Person person){
         if (person == null){
             throw new NullPointerException("Exception: person is null!");
         }
-        int j=0;
+        Set<Floor> floorSet = new HashSet<>();
         for (Floor ownersFloor : floors) {
-            if (ownersFloor!=null && ownersFloor.spacesQuantity(person)!=0){
-                j++;
+            for (int i = 0; i < ownersFloor.size(); i++) {
+                if (ownersFloor.get(i).getPerson().equals(person)) {
+                    floorSet.add(ownersFloor);
+                    break;
+                }
             }
         }
-        Floor[] floorsWithPerson = new Floor[j];
-        j=0;
-        for (Floor ownersFloor : floors) {
-            if (ownersFloor!=null && ownersFloor.spacesQuantity(person)!=0){
-                floorsWithPerson[j] = ownersFloor;
-                j++;
-            }
-        }
-        Arrays.sort(floorsWithPerson);
-        return floorsWithPerson;
+        return floorSet;
     }
 
     @Override

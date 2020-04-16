@@ -1,9 +1,9 @@
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.regex.Pattern;
+
 
 public class OwnersFloor implements Floor, Cloneable {
     private Space[] spaces;
@@ -42,6 +42,60 @@ public class OwnersFloor implements Floor, Cloneable {
             }
         }
         return temp;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return remove((Space) o);
+    }
+
+    @Override
+    public boolean containsAll(@NotNull Collection<?> c) {
+        for (Object x : c) {
+            if (!contains(x)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addAll(@NotNull Collection<? extends Space> c) {
+        for (Space object : c) {
+            add(object);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean removeAll(@NotNull Collection<?> c) {
+        boolean collectionsHasChanged = false;
+        for (Object x : c) {
+            if (contains(x)) {
+                remove(x);
+                count--;
+                collectionsHasChanged = true;
+            }
+        }
+        return collectionsHasChanged;
+    }
+
+    @Override
+    public boolean retainAll(@NotNull Collection<?> c) {
+        boolean collectionHasChanged = false;
+        for (int i = 0; i < size; i++) {
+            if (!c.contains(get(i))) {
+                remove(i--);
+                collectionHasChanged = true;
+            }
+        }
+        return collectionHasChanged;
+    }
+
+    @Override
+    public void clear() {
+        spaces = new Space[16];
+        count = 0;
     }
 
     public boolean add(int index, Space space){
@@ -161,6 +215,21 @@ public class OwnersFloor implements Floor, Cloneable {
         return count;
     }
 
+    @Override
+    public boolean isEmpty() {
+        return count==0;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        for (int i = 0; i < size; i++) {
+            if (spaces[i].equals(o)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Space[] getSpaces() {
         Space[] getSpaces = new Space[count];
         int j = 0;
@@ -173,7 +242,7 @@ public class OwnersFloor implements Floor, Cloneable {
         return getSpaces;
     }
 
-    public Space[] getEmptySpaces() {
+    public Deque<Space> getEmptySpaces() {
         Space[] getSpaces = new Space[getSpaces().length];
         int j = 0;
         for (int i = 0; i < getSpaces().length; i++) {
@@ -190,34 +259,23 @@ public class OwnersFloor implements Floor, Cloneable {
                 k++;
             }
         }
-        return returnSpace;
+        return new LinkedList<>(Arrays.asList(returnSpace));
     }
 
-    public Space[] getSpaces(VehicleTypes vehicleTypes){
+    public List<Space> getSpaces(VehicleTypes vehicleTypes){
         if (vehicleTypes == null){
             throw new NullPointerException("Exception: vehicleTypes is null!");
         }
-        Space[] getSpaces = getSpaces();
-        Space[] getTypesSpaces = new Space[count];
-        int j = 0;
-        for (int i = 0; i < count; i++) {
-            if (getSpaces[i].getVehicle().getType().equals(vehicleTypes)){
-                getSpaces[j]=getSpaces[i];
-                j++;
+        List<Space> spacesList = new ArrayList<>();
+        for (Space space : spaces) {
+            if (space.getVehicle().getType().equals(vehicleTypes)) {
+                spacesList.add(space);
             }
         }
-        Space[] returnSpace = new Space[j];
-        int k = 0;
-        for (int i = 0; i < j; i++) {
-            if (getSpaces[i]!=null){
-                returnSpace[k] = getSpaces[i];
-                k++;
-            }
-        }
-        return returnSpace;
+        return spacesList;
     }
 
-    public Vehicle[] getVehicles(){
+    public List<Vehicle> getVehicles(){
         Vehicle[] getVehicles = new Vehicle[count];
         int j= 0;
         for (int i = 0; i < size; i++) {
@@ -226,7 +284,7 @@ public class OwnersFloor implements Floor, Cloneable {
                 j++;
             }
         }
-        return getVehicles;
+        return Arrays.asList(getVehicles);
     }
 
     public void increaseArray(){
@@ -360,6 +418,18 @@ public class OwnersFloor implements Floor, Cloneable {
         return new SpaceIterator();
     }
 
+    @NotNull
+    @Override
+    public Object[] toArray() {
+        return spaces;
+    }
+
+    @NotNull
+    @Override
+    public <T> T[] toArray(@NotNull T[] a) {
+        return (T[]) spaces;
+    }
+
     private class SpaceIterator implements Iterator<Space> {
         int index;
 
@@ -376,6 +446,8 @@ public class OwnersFloor implements Floor, Cloneable {
             throw new NoSuchElementException();
         }
     }
+
+
 
 
 }
